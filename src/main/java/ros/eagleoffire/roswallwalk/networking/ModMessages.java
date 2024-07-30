@@ -7,6 +7,8 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import ros.eagleoffire.roswallwalk.ROSWallWalk;
+import ros.eagleoffire.roswallwalk.networking.packet.WallWalkingDataSyncC2SPacket;
+import ros.eagleoffire.roswallwalk.networking.packet.WallWalkingDataSyncS2CPacket;
 
 public class ModMessages {
     private static SimpleChannel INSTANCE;
@@ -17,17 +19,30 @@ public class ModMessages {
     }
 
     public static void register() {
-        INSTANCE = NetworkRegistry.ChannelBuilder
+        SimpleChannel net = NetworkRegistry.ChannelBuilder
                 .named(new ResourceLocation(ROSWallWalk.MODID, "messages"))
                 .networkProtocolVersion(() -> "1.0")
                 .clientAcceptedVersions(s -> true)
                 .serverAcceptedVersions(s -> true)
                 .simpleChannel();
 
+        INSTANCE = net;
+
+        net.messageBuilder(WallWalkingDataSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(WallWalkingDataSyncC2SPacket::new)
+                .encoder(WallWalkingDataSyncC2SPacket::toBytes)
+                .consumerMainThread(WallWalkingDataSyncC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(WallWalkingDataSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(WallWalkingDataSyncS2CPacket::new)
+                .encoder(WallWalkingDataSyncS2CPacket::toBytes)
+                .consumerMainThread(WallWalkingDataSyncS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
-        INSTANCE.sendToServer(message);
+         INSTANCE.sendToServer(message);
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {

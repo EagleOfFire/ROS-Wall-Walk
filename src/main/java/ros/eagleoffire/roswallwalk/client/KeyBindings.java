@@ -13,10 +13,12 @@ public final class KeyBindings {
 
     private KeyBindings(){}
 
+    private static final String CATEGORY = "key.categories." + ROSWallWalk.MODID;
+
     public final KeyMapping WALL_WALK_KEY = new KeyMapping(
             "key." + ROSWallWalk.MODID + ".wall_walk",
             KeyConflictContext.IN_GAME,
             InputConstants.getKey(InputConstants.KEY_G,-1),
-            KeyMapping.CATEGORY_MOVEMENT
+            CATEGORY
     );
 }

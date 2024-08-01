@@ -28,7 +28,6 @@ public class WallWalkingDataSyncC2SPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            // HERE WE ARE ON THE SERVER!
             ServerPlayer player = context.getSender();
             ServerLevel level = player.serverLevel();
                 player.getCapability(WallWalkingProvider.WALL_WALKING_CAPABILITY).ifPresent(wallWalking -> {
